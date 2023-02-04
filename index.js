@@ -2,41 +2,33 @@ const db = require('./db/connections');
 const inquirer = require("inquirer");
 const { default: Choices } = require('inquirer/lib/objects/choices');
 // const cTable = require('console.table');
+const mysql = require('mysql2');
 
 
 inquirer
-  .prompt([
-    {
-      type: 'confirm',
-      name: 'department_id',
-      message: 'dapart:',
-   
-    }
-  ])
-  .then(answers => {
+.prompt([
+{
+type: 'confirm',
+name: 'seeDepartmentData',
+message: 'Would you like to get started'
+},
+{
+type: 'confirm',
+name: 'department_id',
+message: 'Departments/Ids',
+when: answers => answers.seeDepartmentData === true
+}
+])
+.then(answers => {
+  if (answers.seeDepartmentData === true) {
     db.promise()
-      .query(`SELECT * FROM department = ${answers.department_id}`)
-      .then(data => console.table(data[0]));
-  });
+    .query(`SELECT * FROM department`)
+    .then(data => console.table(data))
+    .catch(err => console.error(err));
+  } else {
+    console.log("No department data will be shown.");
+  }
+});
 
   
-  // inquirer
-  //   .prompt([
-  //     {
-  //       type: "list",
-  //       name: "viewDepartments",
-  //       message: "What would you like to do?",
-  //       choices: ["View all departments", "Exit"],
-  //     },
-  //   ])
-  //   .then((answers) => {
-  //     if (answers.viewDepartments === "View all departments") {
-  //       // Execute the SQL query to retrieve all departments from the "department" table
-  //       // ...
-  
-  //       console.log("All departments:", departments);
-  //     } else {
-  //       console.log("Exiting...");
-  //     }
-  //   });
   
