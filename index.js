@@ -1,34 +1,27 @@
 const db = require('./db/connections');
-const inquirer = require("inquirer");
-const { default: Choices } = require('inquirer/lib/objects/choices');
-// const cTable = require('console.table');
+const { prompt } = require("inquirer");
+const cTable = require('console.table');
 const mysql = require('mysql2');
+const { questions } = require('./lib');
+const DB = require('./db/DB');
+
+const init = () =>
+  prompt(questions)
+    .then(ans => {
+      let {task} = ans;
+
+      if (task == 'view all departments') DB.getDepartments().then(init);
+      if (task == 'view all roles') DB.getRoles().then(init);
+      if (task == 'view all employees') DB.getEmps().then(init);
+      if (task == 'add a department') DB.addDep(ans).then(init);
+      if (task == 'add a role') DB.addRole(ans).then(init);
+    });
+
+init();
 
 
-inquirer
-.prompt([
-{
-type: 'confirm',
-name: 'seeDepartmentData',
-message: 'Would you like to get started'
-},
-{
-type: 'confirm',
-name: 'department_id',
-message: 'Departments/Ids',
-when: answers => answers.seeDepartmentData === true
-}
-])
-.then(answers => {
-  if (answers.seeDepartmentData === true) {
-    db.promise()
-    .query(`SELECT * FROM department`)
-    .then(data => console.table(data))
-    .catch(err => console.error(err));
-  } else {
-    console.log("No department data will be shown.");
-  }
-});
 
-  
-  
+ 
+
+
+
